@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+
+    <script src="https://code.jquery.com/jquery-2.1.3.js"></script>
+    <meta charset="UTF-8">
+    <script>
+        console.log("hi jaerd")
+
+        const  CLIENT_ID = "O32E2ZIISL1Q3GLBVH3FSCQA2BQ5HTN5PGF1UYFWIOOXFGEU";
+        const CLIENT_SECRET = "CEKOKUWVQFGYBADZRODQVWVE1L4YT2G40JOAKLFCSQBKKM1S";
+        $(document).ready(function() {
+            $.ajax({
+                url: "https://api.foursquare.com/v2/venues/search?client_id=" + CLIENT_ID +"&client_secret=" + CLIENT_SECRET + "&v=20130815%20&ll=40.7,-74%20&query=sushi"
+            }).then(function(data) {
+                myData =                     JSON.stringify(data.response)
+                console.log("The data was" + myData)
+                $('#content').text(myData);
+            });
+        });
+    </script>
+    <title></title>
+</head>
+<body>
+
+<div id="content">
+    hi jared ther
+</div>
+</body>
+</html>
