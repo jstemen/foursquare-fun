@@ -18,14 +18,16 @@
         const CLIENT_ID = "O32E2ZIISL1Q3GLBVH3FSCQA2BQ5HTN5PGF1UYFWIOOXFGEU";
         const CLIENT_SECRET = "CEKOKUWVQFGYBADZRODQVWVE1L4YT2G40JOAKLFCSQBKKM1S";
 
-        const CREDENTIALS_STR = "client_id=" + CLIENT_ID + "&client_secret=" + CLIENT_SECRET
+        const CREDENTIALS_STR = "client_id=" + CLIENT_ID + "&client_secret=" + CLIENT_SECRET;
         var searchUrl = function () {
             //LA coordinates 34.0500° N, 118.2500° W
-            var lat = "34.0500"
-            var lng =  "-118.2500"
+            var lat = "34.0500";
+            var lng =  "-118.2500";
 
-            return "https://api.foursquare.com/v2/venues/search?" + CREDENTIALS_STR + "&v=20130815%20&ll=" + lat + "," + lng + " %20&query=food"
-        }
+            return "https://api.foursquare.com/v2/venues/search?" + CREDENTIALS_STR +
+                    "&v=20130815%20&ll=" + lat + "," + lng + " %20&query=food"
+        };
+        //ToDo convert this to use a template engine instead of hacky string concatenation
         var generateHtmlForVenue = function (venue, photoObj) {
 
             var out = "<div class='col-md-6 well' >Name: " + venue.name
@@ -35,33 +37,34 @@
             if(description){
                 out += " Description: " + description
             }
-
+            //Not sure we never seem to get back photos for any of the venues...
             if (photoObj.response.photos.size > 0) {
-                var photo = photoObj.response.photos[0]
-                out += " Photo: <img src='" + photo.prefix + "original" + photo.suffix + CREDENTIALS_STR + "' /> "
+                var photo = photoObj.response.photos[0];
+                out += " Photo: <img src='" + photo.prefix + "original" + photo.suffix + CREDENTIALS_STR + "' /> ";
             }
 
 
-            out += "</div>"
+            out += "</div>";
             return out;
 
-        }
+        };
         $(document).ready(function () {
-            console.log("Fetching data from " + searchUrl())
+            console.log("Fetching data from " + searchUrl());
             $.ajax({
                 url: searchUrl()
             }).then(function (data) {
-                var myData = JSON.stringify(data.response)
+                var myData = JSON.stringify(data.response);
                 //console.log("The data was" + myData)
                 var newContent = "";
                 //ToDo convert to promise
                 $.each(data.response.venues, function (index, venueObj) {
-                    var photoUrl = "https://api.foursquare.com/v2/venues/" + venueObj.id + "/photos?" + CREDENTIALS_STR + "&v=20140806&m=foursquare"
-                    console.log(photoUrl)
+                    var photoUrl = "https://api.foursquare.com/v2/venues/" + venueObj.id +
+                            "/photos?" + CREDENTIALS_STR + "&v=20140806&m=foursquare";
+                    console.log(photoUrl);
                     $.ajax({
                         url: photoUrl
                     }).then(function (photoObj) {
-                        newContent = newContent + generateHtmlForVenue(venueObj, photoObj)
+                        newContent = newContent + generateHtmlForVenue(venueObj, photoObj);
                         $('#content').html(newContent);
                     });
                 })
@@ -79,6 +82,9 @@
 </head>
 <body>
 <h1 class="center-text">Food Venues: </h1>
+<p>
+    Below is a list of venues returned by the foursquare api when doing a search for "food".
+</p>
 
 <div id="content" class="container-fluid">
     Loading content...
