@@ -14,15 +14,27 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <script>
 
+        //These shouldn't be saved on the client side
         const CLIENT_ID = "O32E2ZIISL1Q3GLBVH3FSCQA2BQ5HTN5PGF1UYFWIOOXFGEU";
         const CLIENT_SECRET = "CEKOKUWVQFGYBADZRODQVWVE1L4YT2G40JOAKLFCSQBKKM1S";
+
         const CREDENTIALS_STR = "client_id=" + CLIENT_ID + "&client_secret=" + CLIENT_SECRET
         var searchUrl = function () {
-            return "https://api.foursquare.com/v2/venues/search?" + CREDENTIALS_STR + "&v=20130815%20&ll=40.7,-74%20&query=food"
+            //LA coordinates 34.0500° N, 118.2500° W
+            var lat = "34.0500"
+            var lng =  "-118.2500"
+
+            return "https://api.foursquare.com/v2/venues/search?" + CREDENTIALS_STR + "&v=20130815%20&ll=" + lat + "," + " %20&query=food"
         }
         var generateHtmlForVenue = function (venue, photoObj) {
 
-            var out = "<div>Veune Name: " + venue.name
+            var out = "<div class='col-md-6 well' >Name: " + venue.name
+
+            var description = venue.description;
+
+            if(description){
+                out += " Description: " + description
+            }
 
             if (photoObj.response.photos.size > 0) {
                 var photo = photoObj.response.photos[0]
@@ -42,15 +54,14 @@
                 var myData = JSON.stringify(data.response)
                 //console.log("The data was" + myData)
                 var newContent = "";
-                $.each(data.response.venues, function (index, venue) {
-                    var photoUrl = "https://api.foursquare.com/v2/venues/" + venue.id + "/photos?" + CREDENTIALS_STR + "&v=20140806&m=foursquare"
+                //ToDo convert to promise
+                $.each(data.response.venues, function (index, venueObj) {
+                    var photoUrl = "https://api.foursquare.com/v2/venues/" + venueObj.id + "/photos?" + CREDENTIALS_STR + "&v=20140806&m=foursquare"
                     console.log(photoUrl)
                     $.ajax({
                         url: photoUrl
-
-
-                    }).then(function (photo) {
-                        newContent = newContent + generateHtmlForVenue(venue, photo)
+                    }).then(function (photoObj) {
+                        newContent = newContent + generateHtmlForVenue(venueObj, photoObj)
                         $('#content').html(newContent);
                     });
                 })
@@ -58,12 +69,19 @@
             });
         });
     </script>
-    <title></title>
+    <style>
+        .center-text {
+            text-align: center;
+        }
+
+    </style>
+    <title>Foursquare Fun!!!!!</title>
 </head>
 <body>
+<h1 class="center-text">Food Venues: </h1>
 
-<div id="content">
-    hi jared ther
+<div id="content" class="container-fluid">
+    Loading content...
 </div>
 </body>
 </html>
